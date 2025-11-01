@@ -6,9 +6,6 @@ function JavaCompiler() {
   const [javaCode, setJavaCode] = useState(`public class Main {
     public static void main(String[] args) {
         System.out.println("Hello from Codii!");
-        System.out.println("Java compiled to JavaScript!");
-        
-        // Simple calculation
         int result = fibonacci(10);
         System.out.println("Fibonacci(10) = " + result);
     }
