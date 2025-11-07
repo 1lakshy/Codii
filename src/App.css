@@ -327,7 +327,7 @@ body {
   height: 100%;
   width: 0;
   background: linear-gradient(90deg, #ff5744, #ff7966);
-  animation: codiiLoad 4s ease-in-out forwards;
+  animation: codiiLoad 3s ease-in-out forwards;
   border-radius: 4px;
 }
 
