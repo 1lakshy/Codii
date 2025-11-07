@@ -1,10 +1,8 @@
 import React, { useRef, useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
 
-
 function JsCompiler() {
-  const [code, setCode] = useState(`
-// Example JS program
+  const [code, setCode] = useState(`// Example JS program
 console.log("Hello from JavaScript in the browser!");
 
 function fibonacci(n) {
@@ -16,8 +14,15 @@ console.log("Fibonacci(10) =", fibonacci(10));
   `);
 
   const [output, setOutput] = useState("");
+  const [status, setStatus] = useState("Initializing JavaScript runtime...");
+  const [showLoader, setShowLoader] = useState(true);
   const iframeRef = useRef(null);
-  const [status, setStatus] = useState("Ready to run JavaScript!");
+  const messageHandlerRef = useRef(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowLoader(false), 3000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const editorOptions = {
     autoIndent: "full",
@@ -30,32 +35,27 @@ console.log("Fibonacci(10) =", fibonacci(10));
     padding: { top: 16, bottom: 16 },
   };
 
-  // Create iframe sandbox for code execution
-  const createIframe = () => {
+  const runJs = () => {
+    setStatus("Running JavaScript...");
+    setOutput("");
+
+    // Remove previous iframe if exists
+    if (iframeRef.current) {
+      document.body.removeChild(iframeRef.current);
+      iframeRef.current = null;
+    }
+
+    // Create new iframe
     const iframe = document.createElement("iframe");
-    iframe.style.display = "none";
     iframe.sandbox = "allow-scripts";
+    iframe.style.display = "none";
     document.body.appendChild(iframe);
-    return iframe;
-  };
+    iframeRef.current = iframe;
 
-const runJs = () => {
-  setStatus("Running JavaScript...");
-  setOutput("");
-
-  // Remove previous iframe
-  if (iframeRef.current) document.body.removeChild(iframeRef.current);
-
-  // Create sandboxed iframe with inline HTML
-  const iframe = document.createElement("iframe");
-  iframe.sandbox = "allow-scripts";
-  iframe.style.display = "none";
-
-  // Script that runs inside the iframe
-  const iframeContent = `
-    <script>
-      window.addEventListener('message', (event) => {
-        try {
+    // Add script inside iframe
+    const iframeContent = `
+      <script>
+        window.addEventListener('message', (event) => {
           const code = event.data;
           const log = (...args) => parent.postMessage({ type: 'log', data: args.join(' ') }, '*');
           const error = (...args) => parent.postMessage({ type: 'error', data: args.join(' ') }, '*');
@@ -66,42 +66,64 @@ const runJs = () => {
           try {
             eval(code);
           } catch (err) {
-            error(err);
+            error(err.message);
           }
-        } catch (err) {
-          parent.postMessage({ type: 'error', data: err.message }, '*');
-        }
-      });
-    </script>
-  `;
+        });
+      </script>
+    `;
+    iframe.srcdoc = iframeContent;
 
-  // Inject the script via srcdoc (same-origin)
-  iframe.srcdoc = iframeContent;
-  document.body.appendChild(iframe);
-  iframeRef.current = iframe;
-
-  // Listen for logs from iframe
-  window.addEventListener("message", (event) => {
-    if (event.data.type === "log") {
-      setOutput((prev) => prev + event.data.data + "\n");
-    } else if (event.data.type === "error") {
-      setOutput((prev) => prev + "Error: " + event.data.data + "\n");
+    // Remove old listener if it exists
+    if (messageHandlerRef.current) {
+      window.removeEventListener("message", messageHandlerRef.current);
     }
-  });
 
-  // Send code to iframe for execution
-  setTimeout(() => {
-    iframe.contentWindow.postMessage(code, "*");
-  }, 100);
+    // New message handler
+    const handleMessage = (event) => {
+      if (event.data.type === "log") {
+        setOutput((prev) => prev + event.data.data + "\n");
+      } else if (event.data.type === "error") {
+        setOutput((prev) => prev + "Error: " + event.data.data + "\n");
+      }
+    };
 
-  setStatus("Execution completed!");
-};
+    messageHandlerRef.current = handleMessage;
+    window.addEventListener("message", handleMessage);
 
+    // Run code inside iframe
+    setTimeout(() => {
+      iframe.contentWindow.postMessage(code, "*");
+    }, 100);
+
+    setStatus("Execution completed!");
+  };
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (iframeRef.current) document.body.removeChild(iframeRef.current);
+      if (messageHandlerRef.current)
+        window.removeEventListener("message", messageHandlerRef.current);
+    };
+  }, []);
 
   const clearAll = () => {
     setOutput("");
     setStatus("Ready to run JavaScript!");
   };
+
+  // 👇 Show loader before app loads
+  if (showLoader) {
+    return (
+      <div className="codii-loader-container">
+        <img src="/codii_logo_trans.png" alt="Codii Logo" className="codii-loader-logo" />
+        <div className="codii-progress-bar">
+          <div className="codii-progress-fill"></div>
+        </div>
+        <div className="codii-loader-text">Initializing your coding space...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="app-container">
@@ -137,7 +159,6 @@ const runJs = () => {
 
       {/* Main Layout */}
       <div className="main-content">
-        {/* Code Editor */}
         <div className="editor-section">
           <Editor
             height="100%"
@@ -149,7 +170,6 @@ const runJs = () => {
           />
         </div>
 
-        {/* Output */}
         <div className="editor-section output-section">
           <Editor
             height="100%"
