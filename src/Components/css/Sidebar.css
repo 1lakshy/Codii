@@ -1,0 +1,89 @@
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 60px;
+  background-color: #161616;
+;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25px 0;
+  border-right: 1px solid #FF5744;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.03);
+  z-index: 999;
+}
+
+.logo .circle {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background-color: #ff5744;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 20px;
+  box-shadow: 0 0 0 3px #ffe2da;
+}
+
+.nav-icons {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+}
+
+.icon-box {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background-color: #f7f7f7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.25s ease-in-out;
+  text-decoration: none;
+  color: #222;
+}
+
+.icon-box:hover {
+  transform: scale(1.05);
+  background-color: #FF5744;
+}
+
+.icon-box.active {
+  background-color: #FF5744;
+  color: #fff;
+}
+
+.label {
+  position: absolute;
+  left: 60px;
+  background: #f7f7f7;
+  color: #121212;
+  font-size: 10px;
+  padding: 3px 6px;
+  border-radius: 6px;
+  font-weight: 600;
+  opacity: 0;
+  transition: all 0.2s ease-in-out;
+}
+
+.icon-box:hover .label {
+  opacity: 1;
+}
+
+.footer-text {
+  text-align: center;
+  font-weight: bold;
+  color: #121212;
+  font-size: 12px;
+  line-height: 1.1;
+  margin-bottom: 10px;
+  letter-spacing: 0.2px;
+}
