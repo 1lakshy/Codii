@@ -20,7 +20,17 @@ function PythonCompiler() {
       setStatus("Loading Pyodide...");
       try {
         if (!window.loadPyodide) {
-          await import("https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js");
+          // await import("https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js");
+          const script = document.createElement("script");
+          script.src = "https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js";
+          script.async = true;
+          document.body.appendChild(script);
+
+          await new Promise((resolve, reject) => {
+            script.onload = resolve;
+            script.onerror = reject;
+          });
+
         }
 
         const pyodide = await window.loadPyodide({
@@ -86,25 +96,25 @@ sys.stderr.content = ""
       await pyodide.runPythonAsync(pythonCode);
       setStatus("Execution completed!");
     } catch (err) {
-  let cleanedError = err.message || err.toString();
+      let cleanedError = err.message || err.toString();
 
-  // ✅ If the error contains a long traceback, keep only the last few relevant lines
-  if (cleanedError.includes("Traceback")) {
-    const lines = cleanedError.split("\n");
+      // ✅ If the error contains a long traceback, keep only the last few relevant lines
+      if (cleanedError.includes("Traceback")) {
+        const lines = cleanedError.split("\n");
 
-    // Find where user code starts (usually '<exec>' or 'File "<exec>"')
-    const startIndex = lines.findIndex(line => line.includes('File "<exec>"'));
-    if (startIndex !== -1) {
-      cleanedError = lines.slice(startIndex).join("\n"); // Keep only the useful traceback part
-    } else {
-      // fallback: show last few lines if "<exec>" not found
-      cleanedError = lines.slice(-5).join("\n");
+        // Find where user code starts (usually '<exec>' or 'File "<exec>"')
+        const startIndex = lines.findIndex(line => line.includes('File "<exec>"'));
+        if (startIndex !== -1) {
+          cleanedError = lines.slice(startIndex).join("\n"); // Keep only the useful traceback part
+        } else {
+          // fallback: show last few lines if "<exec>" not found
+          cleanedError = lines.slice(-5).join("\n");
+        }
+      }
+
+      setOutput((prev) => prev + `${cleanedError}\n`);
+      setStatus("Execution failed");
     }
-  }
-
-  setOutput((prev) => prev + `${cleanedError}\n`);
-  setStatus("Execution failed");
-}
 
   };
 
@@ -114,17 +124,17 @@ sys.stderr.content = ""
   };
 
   // ⏳ Show loading animation first
-if (showLoader) {
-  return (
-    <div className="codii-loader-container">
-      <img src="/codii_logo_trans.png" alt="Codii Logo" className="codii-loader-logo" />
-      <div className="codii-progress-bar">
-        <div className="codii-progress-fill"></div>
+  if (showLoader) {
+    return (
+      <div className="codii-loader-container">
+        <img src="/codii_logo_trans.png" alt="Codii Logo" className="codii-loader-logo" />
+        <div className="codii-progress-bar">
+          <div className="codii-progress-fill"></div>
+        </div>
+        <div className="codii-loader-text">Initializing your coding space...</div>
       </div>
-      <div className="codii-loader-text">Initializing your coding space...</div>
-    </div>
-  );
-}
+    );
+  }
 
   return (
     <div className="app-container">
