@@ -2,42 +2,93 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    />
+    <meta name="theme-color" content="#FF5744" />
     <meta
       name="description"
-      content="Web site created using create-react-app"
+      content="Codii — A modern online compiler for Java, Python, and JavaScript. Run code instantly in your browser with a sleek developer interface."
     />
+    <meta
+      name="keywords"
+      content="Codii, Online Compiler, Python, Java, JavaScript, Code Editor, Pyodide, Monaco Editor"
+    />
+    <meta name="author" content="Codii Team" />
+
+    <!-- ✅ Favicons -->
+    <link rel="icon" type="image/png" href="%PUBLIC_URL%/favicon.png" />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
+
+    <!-- ✅ Manifest -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
 
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
-    <title>React App</title>
+    <!-- ✅ Title -->
+    <title>Codii</title>
+
+    <!-- ✅ Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- ✅ Pyodide (loaded before React for Python execution) -->
+    <script
+      src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- ✅ Preload optimization -->
+    <link
+      rel="preload"
+      href="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"
+      as="script"
+    />
+
+    <!-- ✅ Optional: Basic styling for pre-render loader -->
+    <style>
+      body {
+        margin: 0;
+        background: #0a0a0a;
+        color: #fff;
+        font-family: "JetBrains Mono", monospace;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+      }
+      #root {
+        width: 100%;
+      }
+      .initial-loader {
+        text-align: center;
+        animation: fade 2s ease-in-out infinite alternate;
+      }
+      @keyframes fade {
+        from {
+          opacity: 0.5;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      .initial-loader img {
+        width: 150px;
+        margin-bottom: 1rem;
+      }
+    </style>
   </head>
+
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
+    <noscript>You need to enable JavaScript to run Codii.</noscript>
 
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
+    <!-- ✅ Loader shown before React mounts -->
+    <div id="root">
+      <div class="initial-loader">
+        <img src="%PUBLIC_URL%/codii_logo_trans.png" alt="Codii Logo" />
+        <p>Initializing Codii Compiler...</p>
+      </div>
+    </div>
   </body>
 </html>
